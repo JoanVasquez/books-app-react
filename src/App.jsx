@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { Input } from "./components/Inputs";
 import Button from "./components/Button";
 import BookList from "./components/BookList";
-import axios from "axios";
+import axiosUtil from "./utils/axiosUtil";
+
+const endPoint = "http://localhost:3001";
 
 function App() {
   const [data, setData] = useState([]);
@@ -11,8 +13,14 @@ function App() {
 
   useEffect(() => {
     (async function () {
-      const response = await axios.get("http://localhost:3001/books");
-      setData(response.data);
+      const response = await axiosUtil(
+        `${endPoint}/books`,
+        "GET",
+        null,
+        {},
+        {}
+      );
+      setData(response);
     })();
   }, []);
 
@@ -22,13 +30,19 @@ function App() {
       bookTitle: title,
     };
 
-    const response = await axios.post("http://localhost:3001/books", tmpBook);
-    setData((prevData) => [...prevData, response.data]);
+    const response = await axiosUtil(
+      `${endPoint}/books`,
+      "POST",
+      tmpBook,
+      {},
+      {}
+    );
+    setData((prevData) => [...prevData, response]);
     setTitle("");
   };
 
   const onDelete = async (id) => {
-    await axios.delete(`http://localhost:3001/books/${id}`);
+    await axiosUtil(`${endPoint}/books/${id}`, "DELETE");
     const newData = data.filter((item) => item.id !== id);
     setData(newData);
   };
